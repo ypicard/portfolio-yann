@@ -1,0 +1,9 @@
+html
+  head
+    title Yann Picard #{ title ? '- ' + title : null }
+    style
+      include /../public/css/style.css
+  body
+    include /_shared/header
+    block content
+    include /_shared/footer

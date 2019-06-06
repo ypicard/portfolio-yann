@@ -1,0 +1,115 @@
+extends /_shared/layout.pug
+
+block content
+
+  h1 How I refactored a 7 year old legacy tool in 6 months
+  time Yann Picard - Ekimetrics, Hong Kong, 2018
+  p In September 2018, I was sent to Hong Kong for 6 months : my mission there was to refactor a 7 year old Ruby on Rails legacy tool used by a world leading insurance company to monitor their media spendings. The tool was crippled with bugs, had extremely long computation times and an outdated design making it tedious to use for all of its users. Furthermore, adding new features was a lengthy and risky process as no tests had ever been written for this application and no documentation existed : each change was likely to introduce new undetected bugs which would sooner or later be discovered, usually by the client first.
+
+  p If I wanted to do things right, I had to establish a strategy. The code base had over 200 thousand lines of code, I could not just dive in head first without having thought things through before. In what order should I proceed ? In short, the following problems had to be fixed : design, performance, stability, maintainability and error reporting.
+
+  p Performance definitely needed to be improved, but I would probably have to make breaking changes in order to do so. I needed to be sure that the existing behavior of the tool remained unchanged. Plus, even if I already knew the tool in its outlines, getting a deeper understanding of all the internals beforehand could only help me on my journey. It was clear that I first had to bring up the code test coverage as high as possible. This was a necessary task if I wanted the next steps to go smoothly.
+
+  h3 Part 1 : bringing stability by increasing test code coverage to 80%
+  p I spent the first 2 months writing as much test suites as I could to cover the tool's foundations. I used the #[a(href="http://rspec.info", target="_blank") RSpec] ruby testing framework coupled with a few other gems to speed up my workflow. As the code base was too big for me to cover it all alone in such a short period of time, I realized I had to focus on what really mattered and where the business logic happened. This allowed me to have a more severe judgement on what I thought needed to stay in the tool, and what could be disposed of. This way, I removed multiple fancy complicated features non of the users used, clarifying and reducing the amount of unnecessary code. When I had a doubt on a feature's utility or popularity, I always double-checked with my manager and my client to better understand why it was needed, how it was used, and if there was a better way to do things.
+  p At the end of those first 2 months, I had :
+  ul
+      li a <strong>better understading</strong> of the internals of the application, how elements interacted with each other, what triggered delayed jobs on seperate threads, when automatic emails were sent... This was fundamental for the next operations.
+      li deleted and cleaned too many unused features to keep track of. This brought <strong>clarity</strong> to the code. Combined with the previous element, would vastly narrow down the scope of my next work by helping me identify which parts of the tool to focus on first, and which could be left as-is if no time was left.
+      li written over 300 test cases, increasing the code test coverage rate from 0 to nearly 80%. Personal confidence was one of the key takeaways from this point, as I had just hugely increased the tool's <strong>stability</strong> and made it almost immune to breaking changes and mistakes I would inadvertently introduce afterwards.
+      li commented and documented every class, method and file I encountered during this process. This was the first step towards having a proper reference <strong>documentation</strong> and would on the long run facilitate <strong>maintenance</strong> and handovers to new developpers joining the team.
+
+  h3 Part 2 : reaching performance improvements up to 100x
+  p Now that I had a stable and documented code base to work on, design, performance, and error reporting remained to be improved. It was clear for me I had to concentrate my efforts on performance issues. This was the most painful and recurently criticized flaw by our client and naturally earned the number one position in things to fix. Plus, tackling this now was a rather safe decision to take. If things got out of hands and time became an issue due to wrongly estimated deadlines (one of the hardest things to do concerning code if you ask me), only part of the tool would be optimized but it would still be deliverable and usable for our client. This way of thinking is tighlty coupled to the consultancy industry and I do not especially vouch for it, but this was how it worked. 
+  p I started by laying down all the bottlenecks I had identified in the previous part and sorting them by pain caused to the client and amount of time needed to fix. I established a roadmap which made it easy for me to know where to start and where to go : for example, improving the home page loading time had way more impact than increasing a user's new profile picture upload time. One was used by all users every time they accessed the tool, the other only once or twice a year per user.
+  p The next month was therefor pretty straightforward as I was simply going through my performance roadmap. Some of the techniques used to obtain performance gains included :
+  ul 
+      li replacing heavy data manipulation, filtering and sorting done on the main thread with native database queries.
+      li using eager loading to fix the #[a(href="https://maximomussini.com/posts/mongoid-n+1/", target="_blank") n + 1 problem] induced by relationships between objects when using the mongoid ORM (too much abstraction often conceals what is happening under the hood). 
+      li merging multiple frontend database queries into single calls when possible by pre-populating nested attributes and relationships.
+      li removing useless frontend and backend database query calls which were leftovers from previous refactorings.
+      li handling heavy data exports on different threads using #[a(href="https://github.com/collectiveidea/delayed_job/", target="_blank") delayed jobs] to relieve the main one (Node taught me well).
+      li remodelling data models, class definitions and relationships to avoid (too many) complicated virtual attributes and on the go computations when accessing objects. This implied creating many migration tasks to adapt the old data models, and was a stressful and unreliable process.
+  p In the end, I managed to implement significant performance improvements covering almost all of my roadmap. I'll let the numbers speak for themselves :
+
+  table.fw
+    thead
+      tr
+        th Feature
+        th Prev.
+        th Now
+        th Diff.
+        th %
+    tbody
+      tr
+        td Home
+        td 7.1s
+        td 0.9s
+        td -6.8s
+        td <strong>-88% </strong>
+      tr 
+        td Dashboard
+        td 3.4s
+        td 2.1s
+        td -1.3s
+        td <strong>-38%</strong>
+      tr 
+        td Advanced
+        td 3.9s
+        td 2.0s
+        td -1.9s
+        td <strong>-49%</strong>
+      tr 
+        td Edit
+        td 4.9s
+        td 2.6s
+        td -2.3s
+        td <strong>-47%</strong>
+      tr
+        td Public
+        td 2.9s
+        td 0.9s
+        td -2.0s
+        td <strong>-69%</strong>
+      tr 
+        td Export 1
+        td 52s
+        td 10s
+        td -42s
+        td <strong>-81%</strong>
+      tr 
+        td Export 2
+        td 112s
+        td 17s
+        td -95s
+        td <strong>-85%</strong>
+
+
+         
+  p Only one last part remained : making the tool user-friendly once again. Luckily enough for me, our designer greatly helped me on the mockups. I could focus on implementation.
+
+  h3 Part 3 : making users enjoy the tool again
+  p As I said, the tool was born over 7 years ago. No dedicated web designer or UX expert was part of the team back then. The 2 former full stack developpers were responsible for every aspect of the tool and did their best with the design. Plus, mobile suuport hadn't been considered and was now a requirement for the client. Things had to change.
+  p My designer colleague provided me nice and fresh new mockups which would change everything for our users. He took the time to do UX workshops with them to grasp the main blocking points and managed to get rid of them in his new design. This way of proceeding assured us we were doing our best to listen to who used our tool and how they would like it to be. We were trying to stay on the right track. 
+  p From a code point of view, against all odds, things got way more complicated than I expected : the framework used was an outdated version of AngularJS. The file structure was a complete mess. No modularity had been baked in. Npm packages had been randomly hard copied into the project folder. But most shockingly...
+  p ...there was only <strong>one stylesheet</strong>. Yes. Only one. With 10 thousand lines of uncommented, undocumented, unorganized CSS code. At least I knew where to start this frontend refactoring. Things went as follow :
+  ul
+      li I added support for the #[a(href="https://bower.io", target="_blank") Bower] <strong>frontend package manager</strong> and deleted every hard copied npm package from our project. This allowed me to leverage Bower's features to easily upgrade all dependencies to their latest supported version, fix version conflicts and reduce our repository's overall size.
+      li I upgraded our AngularJS version to better support <strong>components</strong> (introduced in v1.4) and changed the file structure to be more modular. This would facilitate future maintenace, a lot.
+      li I started splitting the monstruous CSS file into multiple, dedicated stylesheets in hope to make things at least a little clearer and organized.
+      li I added the Bootstrap 4 framework with flexbox support, which would reveal itself extremely useful to manipulate layouts and handle <strong>mobile browsing</strong> in a breeze. I realized only a month later that this upgrade broke all PNG and PDF exports which were using an in-house export engine. Luckily, I found a neat little trick to add flexbox support to our export service which unlocked similar situations in all our other tools. I was pretty proud of this one. Don't be afraid to break things.
+  p The technology and architecture upgrades were dealt with. All that was left to do was implement the new design, leveraging the Bootstrap framework as much as I could to avoid repeating the same mistakes as my predessecors. All in all, I ended up with a smaller frontend code base, a better organized file structure which would make maintenance accessible and customization effortless. I was almost done.
+
+  h3 Part 4 : delivery time
+  p All my goals were accomplished. The tool was more stable than ever thanks to over 300 new automated tests. Maintenance had never been so simple now that a proper documentation existed and the code was commented and clear. Performance was no more an issue as computation times had been blown away. And using the tool wasn't a hassle for the user anymore due to a complete new experience thought by my colleague designer. I quickly added an automated error reporting system thanks to #[a(href="https://rollbar.com", target="_blank") Rollbar] before testing the migration tasks one last time on our staging evironment. With a few last little tweaks, the new version was ready to be deployed, just in time as I got back to France. Everything went fine with our client, and our users are now succesfully using the tool on a daily basis ! No more weekly complaint emails.
+  p What a ride.
+
+  h3 Extras
+  p This mission had no link at all with me being in Hong Kong. I was supposed to work for a different client, on a different tool, but things don't always go as planned. Life lesson here.
+  p There are a lot of other developments I did not talk about in this post but are still worth mentioning. If you wish to get more details on them, send me an email. They involve :
+  ul
+      li being subject to a complete penetration test audit and how to handle it with your client.
+      li adding single sign on (SSO) support with your client's IT infrastructure.
+      li keeping internet explorer support (this one is a nightmare).
+      li refactoring the complete authentication system to be JWT based.
+      li creating a custom NodeJS tool to automate measuring performance improvements and generate a detailed report.

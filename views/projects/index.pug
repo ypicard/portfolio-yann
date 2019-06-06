@@ -1,0 +1,45 @@
+extends /_shared/layout.pug
+
+block content
+
+  h1 Projects
+  .item
+    p Some future projects I would like to dive in :
+    ul 
+      li Build and publish my own npm package.
+      li Develop a native iOS game.
+      li Build some kind of robot / drone / arduino related stuff.
+
+  .item
+    h2 Video game competition  #[a(href="https://ekitag.herokuapp.com", target="_blank") website] with an Arduino connected object
+    code Backend built using Python 3 and Flask, with a PostgreSQL database. Frontend with Angular 6. Extras : browser plugins and Arduino webserver.
+    p #[a(href="https://tagpro.koalabeast.com", target="_blank") Tagpro] is a simple and extremely fun browser miltiplayer game. I used to play this <strong>a lot</strong> with my group of friends back then. The gaming experience was great but lacked a few necessary features to make it perfect in our eyes, such as a balanced team generator, private leagues and statistics tracking, hence this side project.
+    p 
+      i Quick note : using this addon shouldn't come in the way of me and my friends enjoying the game. That's why I developped browser plugins to automate score scrapping and sending it to my database with just a click. The first version required someone to manually input all player scores... Imagine that.
+    ul 
+      li Created a community managed video game website to track player statistics and follow their in-game evolution.
+      li Developed browser plugins for #[a(href="https://chrome.google.com/webstore/detail/ekitag/haajhomjkbhapplbflhgbknkicegmajp", target="_blank") Chrome] and #[a(href="https://addons.mozilla.org/en-US/firefox/addon/ekitag/", target="_blank") Firefox] to automatically collect scores by scrapping endgame screens.
+      li Implemented a custom algorithm to generate balanced teams using collected historical data.
+      li Added a league system  with rankings, medals and penalties. 
+    p Small bonus : I had just bought a new Arduino chip and decided to transform it into a webserver connected to this website. When generating balanced teams, my application would notify the webserver which would in turn trigger a rotating light sitting in our gaming room to warn us a game was about to start !
+
+  .item
+    h2 Personal #[a(href="https://ypicard.dev", target="_blank") website]
+    code Simple, lightweight & blazing fast Express / NodeJS app.
+    p You're on it.
+
+  .item
+    h2 Food slacking #[a(href="https://food-slacking.herokuapp.com", target="_blank") bot]
+    code Powered by Python 3 and Slack's API. Uses web scrapping and unprotected API hacking.
+    p Choosing which delivery service to order from every day for lunchbreak was cumbersome. I built this bot to scrap their websites (or hack their unprotected APIs !), extract daily menus and publish them directly to our team's Slack channel at 11am every weekday. 
+    p If you think about it, this saved every member 15 minutes of useless internet browsing every day... I'll let you do the maths !
+    ul
+      li Slack bot gathering Paris food delivery services daily menus, using web scrapping and API hacking.
+      li Downloaded over 100 times and contacted several times for partnership opportunities.
+
+  .item
+    h2 Android application for my school's students
+    p 
+      time No longer supported.
+    code Native android application communicating with a PHP webserver.
+    p As head of communications of my school's student union, publishing messages and reaching over 800 students using exclusively Facebook was tedious. I built this app to remedy this difficulty.
