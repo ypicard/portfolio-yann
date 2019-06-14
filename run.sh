@@ -1,0 +1,1 @@
+docker run -d -v /etc/letsencrypt/live/ypicard.dev/fullchain.pem:/etc/letsencrypt/live/ypicard.dev/fullchain.pem -v /etc/letsencrypt/live/ypicard.dev/privkey.pem:/etc/letsencrypt/live/ypicard.dev/privkey.pem -p80:8080 -p 443:8443 -t portfolio-yann
