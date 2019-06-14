@@ -2,6 +2,7 @@ body {
   max-width: 70ch;
   padding: 2ch;
   margin: auto;
+  font-size: 17px;
   line-height: 1.1;
   font-family: HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue,
     Helvetica, Arial, Lucida Grande, sans-serif;
@@ -28,7 +29,7 @@ time {
 }
 
 code {
-  font-family: monospace;
+  font-size: 14px;
 }
 
 .item {
