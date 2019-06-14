@@ -5,6 +5,15 @@ const app = express();
 
 app.set("view engine", "pug");
 app.locals.basedir = path.join(__dirname, "views"); // base dir for pug engine includes
+if (process.env.NODE_ENV === "production") {
+  // redirect http on https middleware
+  app.use(function(req, res, next) {
+    if (!req.secure) {
+      return res.redirect(["https://", req.get("Host"), req.url].join(""));
+    }
+    next();
+  });
+}
 // statics
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -36,22 +45,23 @@ app.get("*", function(req, res) {
   res.render("index");
 });
 
+// ssl
+if (process.env.NODE_ENV === "production") {
+  const https = require("https");
+  const fs = require("fs");
+  let httpsOptions = {
+    cert: fs.readFileSync("/etc/letsencrypt/live/ypicard.dev/fullchain.pem"),
+    key: fs.readFileSync("/etc/letsencrypt/live/ypicard.dev/privkey.pem")
+  };
+
+  const httpsServer = https.createServer(httpsOptions, app);
+  httpsServer.listen(8443, function() {
+    console.log(`Http running server on http://localhost:8443`);
+  });
+}
+
 // http
 const httpServer = http.createServer(app);
 httpServer.listen(8080, function() {
   console.log(`Http running server on http://localhost:8080`);
 });
-
-// ssl
-if (process.env.NODE_ENV === "production") {
-  const https = require("https");
-  const fs = require("fs");
-  const httpsServer = https.createServer(httpsOptions, app);
-  let httpsOptions = {
-    cert: fs.readFileSync("/etc/letsencrypt/live/ypicard.dev/fullchain.pem"),
-    key: fs.readFileSync("/etc/letsencrypt/live/ypicard.dev/privkey.pem")
-  };
-  httpsServer.listen(8443, function() {
-    console.log(`Http running server on http://localhost:8443`);
-  });
-}
