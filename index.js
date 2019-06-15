@@ -34,11 +34,10 @@ app.get("/blog/mediatool", function(req, res) {
     title: "How I refactored a 7 year old legacy tool in 6 months"
   });
 });
-app.get("/downloads", function(req, res) {
+app.get("/downloads/:filename", function(req, res) {
   // handle all downloads here
-  const filename = req.query.filename;
-  const file = `${__dirname}/public/downloads/${filename}`;
-  res.download(file); // Set disposition and send it.
+  const filePath = `${__dirname}/public/downloads/${req.param.filename}`;
+  res.download(filePath); // Set disposition and send it.
 });
 app.get("*", function(req, res) {
   // route everything else to home page
