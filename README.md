@@ -40,3 +40,4 @@ $ ssh -i ~/.ssh/keyfile.pem ec2-user@ec2-54-194-210-177.eu-west-1.compute.amazon
 - The domain name `ypicard.dev` is managed on [Google Domains](https://domains.google.com/m/registrar). It has one CNAME (_www.ypicard.dev_) and one alias A pointing to the EC2 elastic IP address.
 - SSL certificate was issued with [certbot](https://certbot.eff.org) directly on the EC2 instance. It is located in the `/etc/letsencrypt` directory.
 - SSL is forced only in `production` mode.
+- To avoid having to enter your github credentials every time on the EC2 instance, enable [ssh forwarding](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/).
