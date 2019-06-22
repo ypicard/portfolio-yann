@@ -4,8 +4,7 @@ body {
   margin: auto;
   font-size: 17px;
   line-height: 1.1;
-  font-family: HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue,
-    Helvetica, Arial, Lucida Grande, sans-serif;
+  font-family: HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
   background: #f5f5f5;
 }
 
@@ -14,7 +13,7 @@ i {
 }
 
 h2:before {
-  content: "";
+  content: '';
   display: inline-block;
   margin-right: 0.5rem;
   /* rectangle */
@@ -38,7 +37,7 @@ code {
 }
 
 .item:after {
-  content: "";
+  content: '';
   height: 0.5px;
   position: absolute;
   display: block;
